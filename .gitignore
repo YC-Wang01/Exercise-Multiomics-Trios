@@ -47,3 +47,16 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# --- FinlandSports Custom Data Block ---
+# 绝对拦截所有庞大数据矩阵和敏感临床表 (fathers/mothers/daughters)
+01_Clean_Data/
+*.csv
+*.xlsx
+*.rds
+*.RData
+
+# 拦截本地生成的高清图表，保持代码库轻量纯粹
+*.pdf
+*.png
+*.tiff
