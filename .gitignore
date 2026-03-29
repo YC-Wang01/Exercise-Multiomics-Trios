@@ -49,12 +49,15 @@ po/*~
 rsconnect/
 
 # --- FinlandSports Custom Data Block ---
-# 绝对拦截所有庞大数据矩阵和敏感临床表 (fathers/mothers/daughters)
+# 拦截庞大数据矩阵、原始表和中间结果
+00_Raw_Data/
 01_Clean_Data/
+03_Results/
 *.csv
 *.xlsx
 *.rds
 *.RData
+.Rhistory
 
 # 拦截本地生成的高清图表，保持代码库轻量纯粹
 *.pdf
