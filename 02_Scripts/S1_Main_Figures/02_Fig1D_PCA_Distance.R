@@ -5,21 +5,21 @@
 # Core:    1:1 Aspect Ratio, Clean Data Only, Auto-Parsing, Fat(%) Assertion.
 # ==============================================================================
 
-# [0. 锁定工作目录]
+# [0. Lock working directory]
 setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
-# [1. 环境准备与包加载]
+# [1. Environment setup and package loading]
 set.seed(42)
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(readr, dplyr, stringr, ggplot2, ggpubr, scales, tibble, tidyr, grid, cowplot, openxlsx)
 
-# 定义路径 (全部指向 Clean Data，彻底废弃 Raw Data 的 Sample Sheet)
+# Define paths (All point to Clean Data, completely deprecating Raw Data's Sample Sheet)
 INPUT_DIR <- "01_Clean_Data"
 OUT_DIR   <- "03_Results/Fig_1/Panel_D_PCA"
 if(!dir.exists(OUT_DIR)) dir.create(OUT_DIR, recursive = TRUE)
 
-# 经典排版主题
+# Classic layout theme
 my_theme <- theme_classic() +
   theme(
     aspect.ratio = 1, 
@@ -31,7 +31,7 @@ my_theme <- theme_classic() +
     legend.position = "none" 
   )
 
-# [2. 样本自动解析引擎 (彻底替代旧版的 Sample Sheet)]
+# [2. Automated sample parsing engine (Completely replaces old Sample Sheet)]
 parse_samples <- function(sample_ids) {
   df <- data.frame(OriginalSampleID = sample_ids, stringsAsFactors = FALSE)
   df$TimePoint_Norm <- "unknown"
@@ -52,16 +52,16 @@ parse_samples <- function(sample_ids) {
   return(df)
 }
 
-# [3. 加载纯净临床总表并提取 Fat(%) 分组]
-cat("Step 1: 挂载临床防线...\n")
+# [3. Load pure clinical master table and extract Fat(%) grouping]
+cat("Step 1: Loading clinical master...\n")
 clin_path <- file.path(INPUT_DIR, "Clinical_Master_Strict.csv")
-if(!file.exists(clin_path)) stop(paste("FATAL ERROR: 找不到临床表！路径:", clin_path))
+if(!file.exists(clin_path)) stop(paste("FATAL ERROR: Cannot find clinical table! Path:", clin_path))
 
 clin_df <- read_csv(clin_path, show_col_types = FALSE) %>% 
   select(Clinical_Subject_ID, `Fat(%)`) %>%
   mutate(Status = ifelse(`Fat(%)` > 30, "Obese", "Lean"))
 
-# [4. 核心距离算法]
+# [4. Core distance algorithm]
 calc_pca_distance <- function(pc_matrix, labels, is_real = TRUE, n_samples = 2000) {
   if (is_real) {
     dists <- c()
@@ -89,7 +89,7 @@ calc_pca_distance <- function(pc_matrix, labels, is_real = TRUE, n_samples = 200
   }
 }
 
-# [5. 执行组学循环计算]
+# [5. Execute omics loop calculation]
 target_datasets <- c("Serum_Proteomics", "Adipose_Proteomics", "Muscle_Proteomics", "Serum_Metabolomics", "Serum_Metabonomics") 
 boxplot_targets <- c("Serum_Proteomics", "Adipose_Proteomics", "Muscle_Proteomics")
 
@@ -104,20 +104,20 @@ for (ds_name in target_datasets) {
   f_path <- file.path(INPUT_DIR, paste0("Cleaned_", ds_name, ".csv"))
   if(!file.exists(f_path)) next
   
-  cat(paste0("\n>>> 正在强攻: ", ds_name, "...\n"))
+  cat(paste0("\n>>> Processing dataset: ", ds_name, "...\n"))
   
   df <- read_csv(f_path, show_col_types = FALSE)
   feat_ids <- df[[1]]; expr_mat <- as.matrix(df[, -1]); rownames(expr_mat) <- feat_ids
   
-  # 使用解析引擎处理列名，直接获得映射信息
+  # Use parsing engine to process column names and get mapping info directly
   clean_sample_names <- gsub("_twin\\.[0-9]+", "", colnames(expr_mat))
   col_meta <- parse_samples(clean_sample_names)
   col_meta$OriginalSampleID <- colnames(expr_mat)
   
-  # 关联临床数据 (直接与 Clinical_Master_Strict.csv 对接)
+  # Merge clinical data (directly dock with Clinical_Master_Strict.csv)
   col_meta <- left_join(col_meta, clin_df, by = "Clinical_Subject_ID")
   
-  # 拦截 Baseline 数据，并剔除缺失表型或角色的样本
+  # Intercept Baseline data and remove samples with missing phenotypes or roles
   valid_tps <- c("pre", "fasting", "fast")
   meta_sub <- col_meta %>% 
     filter(TimePoint_Norm %in% valid_tps & !is.na(Status) & !is.na(Role))
@@ -157,7 +157,7 @@ for (ds_name in target_datasets) {
   
   pca_filename <- paste0("Fig-1D-PCA-", gsub("_", "-", ds_name), ".pdf")
   ggsave(file.path(OUT_DIR, pca_filename), p_pca, width=5.5, height=5.5)
-  cat(paste0("    [已保存] ", pca_filename, "\n"))
+  cat(paste0("    [Saved] ", pca_filename, "\n"))
   
   if (ds_name %in% boxplot_targets) {
     real_d <- calc_pca_distance(pc_for_dist, plot_df$FamilyID, is_real = TRUE)
@@ -186,12 +186,12 @@ for (ds_name in target_datasets) {
     
     box_filename <- paste0("Fig-1D-Dist-", gsub("_", "-", ds_name), ".pdf")
     ggsave(file.path(OUT_DIR, box_filename), p_box, width=4.5, height=5.5)
-    cat(paste0("    [已保存] ", box_filename, "\n"))
+    cat(paste0("    [Saved] ", box_filename, "\n"))
   }
 }
 
-# [6. 单独生成全局通用图例]
-cat("\nStep 4: 抽离标准图例...\n")
+# [6. Generate global common legend separately]
+cat("\nStep 4: Extracting standard legend...\n")
 dummy_df <- data.frame(X=1:2, Y=1:2, Role=c("Daughter","Mother"), Status=c("Lean","Obese"))
 p_legend <- ggplot(dummy_df, aes(x=X, y=Y)) +
   geom_point(aes(shape=Role, fill=Status, color=Status), size=5, stroke=1) +
@@ -209,4 +209,4 @@ ggsave(file.path(OUT_DIR, "Fig-1D-Common-Legend.pdf"), as_ggplot(legend_grob), w
 
 saveWorkbook(wb, file.path(OUT_DIR, "Fig-1D-SourceData.xlsx"), overwrite = TRUE)
 
-cat("\n>>> 分析完成！文件已送达 03_Results/Fig_1/Panel_D_PCA！\n")
+cat("\n>>> Analysis complete! Files delivered to 03_Results/Fig_1/Panel_D_PCA!\n")

@@ -2,10 +2,10 @@
 # Project: FinlandSports V2.0
 # Script:  05_Fig2CD_S2_GSEA_Network.R
 # Panels:  Fig 2C (GSEA Matrix), Fig 2D (Network), Fig S2 (Crosstalk)
-# Style:   Original Theme with Black Axis/Borders + No Grids. No Table_S# Tags.
+# Style:   Original Theme with Black Axis/Borders + No Grids.
 # ==============================================================================
 
-# [0] 锁定工作目录与环境初始化
+# [0] Set working directory and initialize environment
 setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
 if (!require("pacman")) install.packages("pacman")
@@ -26,13 +26,12 @@ DIR_TABLES  <- file.path(DIR_OUT_F2, "Tables")
 
 invisible(lapply(c(DIR_OUT_F2, DIR_OUT_S2, DIR_OUT_CSV, DIR_TABLES), dir.create, recursive = TRUE, showWarnings = FALSE))
 
-# 【修正：精确还原边框，仅将网格变白，轴线变黑】
 my_clean_theme <- theme_bw(base_size = 14) +
   theme(
     panel.grid.major = element_blank(), 
     panel.grid.minor = element_blank(),
-    axis.line = element_blank(), # 依赖 panel.border 提供全封闭边框
-    panel.border = element_rect(color = "black", linewidth = 0.8, fill = NA), # 恢复黑色的全封闭外框
+    axis.line = element_blank(), 
+    panel.border = element_rect(color = "black", linewidth = 0.8, fill = NA), 
     axis.ticks = element_line(color = "black"),
     axis.text = element_text(color = "black", face = "bold"),
     axis.title = element_text(color = "black", face = "bold"),
@@ -42,21 +41,20 @@ my_clean_theme <- theme_bw(base_size = 14) +
   )
 
 # ------------------------------------------------------------------------------
-# [1] 临床数据集成 (强制还原变量名，保证数据表 100% 相同)
+# [1] Clinical Data Integration (Restore variable names for consistency)
 # ------------------------------------------------------------------------------
-message(">>> 加载临床数据...")
+message(">>> Loading...")
 clin_master <- read_csv(file.path(DIR_DATA, "Clinical_Master_Strict.csv"), show_col_types = FALSE) %>%
   dplyr::filter(!is.na(`Fat(%)`)) %>%
   dplyr::mutate(
     Role_Orig = dplyr::case_when(Membercode == 1 ~ "Daughter", Membercode == 2 ~ "Mother", Membercode == 3 ~ "Father", TRUE ~ "Unknown"),
     Subject_ID = tolower(paste0(FamilyID, "_", Role_Orig)),
-    Fat_percent = `Fat(%)`, # 强制还原为您熟悉的变量名
-    # 【核心修复】：去掉 dplyr:: 前缀，直接使用 base R 的 ifelse
+    Fat_percent = `Fat(%)`, 
     Group = ifelse(Fat_percent >= 30, "Obese", "Lean") 
   )
 
 # ------------------------------------------------------------------------------
-# [2] 模块 A: Limma-GSEA 分析引擎
+# [2] Module A: Limma-GSEA Analysis Engine
 # ------------------------------------------------------------------------------
 gsea_full_list <- list() 
 
@@ -64,12 +62,12 @@ generate_full_gsea <- function(filename, prefix) {
   full_path <- file.path(DIR_DATA, filename)
   out_csv   <- file.path(DIR_OUT_CSV, paste0(prefix, "_GSEA_Full.csv"))
   if(file.exists(out_csv)) {
-    message("  [Check] GSEA 全表已存在，跳过运算: ", basename(out_csv))
+    message("  [Check] GSEA results already exist, skipping: ", basename(out_csv))
     return(TRUE)
   }
   if(!file.exists(full_path)) return(FALSE)
   
-  message(paste("\n[Analysis] 正在运算 GSEA:", prefix, "..."))
+  message(paste("\n[Analysis] Running GSEA for:", prefix, "..."))
   data_raw <- read_csv(full_path, show_col_types = F)
   colnames(data_raw)[1] <- "FeatureID"
   expr_mat <- as.matrix(data_raw %>% dplyr::distinct(FeatureID, .keep_all = T) %>% tibble::column_to_rownames("FeatureID"))
@@ -118,7 +116,7 @@ generate_full_gsea("Cleaned_Muscle_Microarray.csv", "Fig2C_Muscle_Transcriptome"
 generate_full_gsea("Cleaned_Muscle_Proteomics.csv", "Fig2D_Muscle_Proteomics")
 
 # ------------------------------------------------------------------------------
-# [3] 模块 B: Crosstalk 象限图渲染 (Fig_S2)
+# [3] Module B: Crosstalk Quadrant Plots (Fig_S2)
 # ------------------------------------------------------------------------------
 plot_compact_crosstalk <- function(prefix_adi, prefix_mus, title_text) {
   file_adi <- file.path(DIR_OUT_CSV, paste0(prefix_adi, "_GSEA_Full.csv"))
@@ -161,9 +159,9 @@ crosstalk_list[["Transcriptome"]] <- plot_compact_crosstalk("Fig2A_Adipose_Trans
 crosstalk_list[["Proteomics"]]    <- plot_compact_crosstalk("Fig2B_Adipose_Proteomics", "Fig2D_Muscle_Proteomics", "Proteomics")
 
 # ------------------------------------------------------------------------------
-# [4] 模块 C: 极致精简气泡图 (Fig. 2C)
+# [4] Module C: Ultra-Compact GSEA Bubble Matrix (Fig. 2C)
 # ------------------------------------------------------------------------------
-message(">>> 正在生成极致紧凑版 GSEA 气泡矩阵...")
+message(">>> Generating GSEA comparison matrix...")
 files_to_load <- list("Adipose RNA" = "Fig2A_Adipose_Transcriptome_GSEA_Full.csv", "Adipose Protein" = "Fig2B_Adipose_Proteomics_GSEA_Full.csv", "Muscle RNA" = "Fig2C_Muscle_Transcriptome_GSEA_Full.csv", "Muscle Protein" = "Fig2D_Muscle_Proteomics_GSEA_Full.csv")
 df_all <- dplyr::bind_rows(lapply(names(files_to_load), function(n) { p <- file.path(DIR_OUT_CSV, files_to_load[[n]]); if(file.exists(p)) read_csv(p, show_col_types=F) %>% dplyr::mutate(Dataset=n) else NULL }))
 
@@ -199,9 +197,9 @@ if(nrow(df_all) > 0) {
 }
 
 # ------------------------------------------------------------------------------
-# [5] 模块 D: 全局 Spearman 通讯网络 (Fig. 2D)
+# [5] Module D: Global Spearman Network (Fig. 2D)
 # ------------------------------------------------------------------------------
-message(">>> 正在构建多组学通讯网络...")
+message(">>> Building multi-omics network...")
 get_expression_safe <- function(filename, hub_genes=NULL) {
   raw_mat <- read_csv(file.path(DIR_DATA, filename), show_col_types = F); colnames(raw_mat)[1] <- "Gene"
   if(!is.null(hub_genes)) raw_mat <- raw_mat %>% dplyr::filter(Gene %in% hub_genes)
@@ -233,7 +231,7 @@ p_edges <- rcorr_res$P %>% as.data.frame() %>% tibble::rownames_to_column("Node1
 
 node_cats <- data.frame(Name = colnames(master_df)[-1]) %>% dplyr::mutate(Category = dplyr::case_when(Name %in% adi_hubs ~ "Adipose Inflammation", Name %in% mus_hubs ~ "Muscle Metabolism", Name %in% c("Fat_percent", "HOMA_IR", "CRP", "Leptin", "Adiponectin", "TRIGLY", "NEFA", "VO2max") ~ "Clinical Phenotype", TRUE ~ "Serum Factors"))
 
-# ================= 核心网络构建 =================
+# ================= Core Network Construction =================
 net_data <- edges %>% dplyr::inner_join(p_edges, by = c("Node1", "Node2")) %>% 
   dplyr::left_join(node_cats, by = c("Node1" = "Name")) %>% dplyr::rename(Cat1 = Category) %>% 
   dplyr::left_join(node_cats, by = c("Node2" = "Name")) %>% dplyr::rename(Cat2 = Category) %>% 
@@ -269,9 +267,9 @@ p_net <- ggraph(g, layout = 'stress') +
 ggsave(file.path(DIR_OUT_F2, "Fig2D_Ultimate_Crosstalk_Network.pdf"), p_net, width = 11, height = 8.5)
 
 # ------------------------------------------------------------------------------
-# [6] 附表导出 (无 Table_S 前缀)
+# [6] Export Supplementary Data (Without Table_S Prefix)
 # ------------------------------------------------------------------------------
-message(">>> 正在导出标准化附表...")
+message(">>> Exporting data tables...")
 
 wb_gsea <- createWorkbook()
 prefixes <- c("Fig2A_Adipose_Transcriptome", "Fig2B_Adipose_Proteomics", "Fig2C_Muscle_Transcriptome", "Fig2D_Muscle_Proteomics")
@@ -292,4 +290,4 @@ for(n in names(crosstalk_list)) {
 }
 saveWorkbook(wb_net, file.path(DIR_TABLES, "Network_and_Crosstalk_Details.xlsx"), overwrite = TRUE)
 
-message("\n>>> 完美收官！")
+message("\n>>> Task Completed Successfully!")

@@ -9,7 +9,7 @@
 # Features: V2.0 I/O Standardization, Column-Parsing Engine, Pure White Theme.
 # ==============================================================================
 
-# [0] 环境初始化
+# [0] Environment Initialization
 setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
 if (!require("pacman")) install.packages("pacman")
@@ -23,7 +23,7 @@ pacman::p_load(
 options(timeout = 600)
 
 # ==============================================================================
-# [1] 用户配置区域 (User Configuration)
+# [1] User Configuration
 # ==============================================================================
 DIR_DATA  <- "01_Clean_Data"
 DIR_OUT   <- "03_Results/Fig_S2/Clinical_GSEA"
@@ -40,10 +40,10 @@ KEYWORD_DICT <- list(
 )
 
 # ==============================================================================
-# [2] 核心函数定义
+# [2] Core Function Definitions
 # ==============================================================================
 
-# --- 2.1 血液评分计算 (Blood Score) ---
+# --- 2.1 Blood Score Calculation ---
 calculate_blood_score <- function(expr_matrix) {
   blood_genes <- c("HBB", "HBA1", "HBA2") 
   found_genes <- intersect(rownames(expr_matrix), blood_genes)
@@ -56,7 +56,7 @@ calculate_blood_score <- function(expr_matrix) {
   }
 }
 
-# --- 2.2 数据加载 (废弃 Sample_Sheet，直连 V2.0 临床表) ---
+# --- 2.2 Data Loading (Direct link to V2.0 Clinical Master) ---
 prepare_metadata <- function() {
   message(">>> [Init] Loading Clinical Metadata...")
   clinical <- read_csv(file.path(DIR_DATA, "Clinical_Master_Strict.csv"), show_col_types = F) %>% 
@@ -67,20 +67,20 @@ prepare_metadata <- function() {
   return(clinical)
 }
 
-# --- 2.3 分析流: Limma -> GSEA -> Dotplot ---
+# --- 2.3 Analysis Pipeline: Limma -> GSEA -> Dotplot ---
 run_gsea_analysis <- function(filename, prefix, clin_master, target_vars) {
   full_path <- file.path(DIR_DATA, filename)
   if(!file.exists(full_path)) { warning("File not found: ", full_path); return(NULL) }
   
   message(paste0("\n>>> [Analysis] Processing: ", prefix))
   
-  # 1. 读取 & 清洗
+  # 1. Reading & Cleaning
   data_raw <- read_csv(full_path, show_col_types = F)
   colnames(data_raw)[1] <- "FeatureID"
   data_raw <- data_raw %>% dplyr::filter(!is.na(FeatureID) & str_trim(FeatureID) != "") %>% dplyr::distinct(FeatureID, .keep_all = T)
   expr_mat <- as.matrix(data_raw[, -1]); rownames(expr_mat) <- data_raw$FeatureID
   
-  # 2. 列名直读解析引擎 (完美对接 V2.0 矩阵)
+  # 2. Column name parsing engine (Seamless mapping to V2.0 matrix)
   meta_sub <- data.frame(Matrix_Col = colnames(expr_mat), stringsAsFactors = FALSE) %>%
     dplyr::mutate(
       Clean_Col = tolower(gsub("_twin\\.[0-9]+", "", Matrix_Col)),
@@ -89,23 +89,23 @@ run_gsea_analysis <- function(filename, prefix, clin_master, target_vars) {
     ) %>%
     dplyr::inner_join(clin_master, by = "Subject_ID")
   
-  # 过滤时间点
+  # Filter time points
   if (!is.null(TIME_FILTER_KEYWORD) && TIME_FILTER_KEYWORD != "") {
     keep_idx <- grepl(TIME_FILTER_KEYWORD, meta_sub$TimeType, ignore.case = TRUE)
     if (sum(keep_idx) < 5) { message("    [Skip] Too few samples after time filter."); return(NULL) }
     meta_sub <- meta_sub[keep_idx, ]
-    # 防止同一个家系抽出两条 pre
+    # Ensure only one 'pre' sample per subject
     meta_sub <- meta_sub %>% dplyr::group_by(Subject_ID) %>% dplyr::slice(1) %>% dplyr::ungroup()
   }
   
   mat_sub <- expr_mat[, meta_sub$Matrix_Col]
   
-  # 3. 预处理 & 血液校正
+  # 3. Pre-processing & Blood correction
   mat_sub[is.na(mat_sub)] <- min(mat_sub, na.rm = T)/2
   if(max(mat_sub, na.rm = T) > 100) mat_sub <- log2(mat_sub + 1)
   blood_score_vec <- calculate_blood_score(mat_sub)
   
-  # 4. 循环临床指标
+  # 4. Loop through clinical traits
   for (trait in target_vars) {
     if (!trait %in% colnames(meta_sub)) next
     valid_idx <- which(!is.na(meta_sub[[trait]]))
@@ -131,16 +131,14 @@ run_gsea_analysis <- function(filename, prefix, clin_master, target_vars) {
       if(!is.null(gsea_res) && nrow(gsea_res) > 0) {
         gsea_res <- setReadable(gsea_res, OrgDb=org.Hs.eg.db, keyType="ENTREZID")
         
-        # 结果目录
         out_sub_dir <- file.path(DIR_OUT, trait)
         if(!dir.exists(out_sub_dir)) dir.create(out_sub_dir, recursive = T)
         
-        # 保存 CSV
         res_df <- as.data.frame(gsea_res)
         res_df$Count <- sapply(strsplit(res_df$core_enrichment, "/"), length)
         write.csv(res_df, file.path(out_sub_dir, paste0("FigS2_", prefix, "_", trait, "_GSEA.csv")), row.names = F)
         
-        # === 绘制经典气泡图 (Dotplot) ===
+        # Generate classic bubble plot (Dotplot)
         try({
           p_dot <- dotplot(gsea_res, showCategory=15, split=".sign") + 
             facet_grid(.~.sign) +
@@ -161,7 +159,7 @@ run_gsea_analysis <- function(filename, prefix, clin_master, target_vars) {
   }
 }
 
-# --- 2.4 绘制 Crosstalk 图 (最终修正版) ---
+# --- 2.4 Crosstalk Plot Visualization ---
 plot_crosstalk_final <- function(prefix_x, prefix_y, trait, label_x, label_y) {
   
   file_x <- file.path(DIR_OUT, trait, paste0("FigS2_", prefix_x, "_", trait, "_GSEA.csv"))
@@ -241,7 +239,7 @@ plot_crosstalk_final <- function(prefix_x, prefix_y, trait, label_x, label_y) {
 }
 
 # ==============================================================================
-# [3] 执行主程序
+# [3] Main Execution
 # ==============================================================================
 
 if(!dir.exists(DIR_OUT)) dir.create(DIR_OUT, recursive = T)

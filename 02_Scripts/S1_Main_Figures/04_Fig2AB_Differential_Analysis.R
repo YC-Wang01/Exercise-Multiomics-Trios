@@ -5,50 +5,50 @@
 # Style:   Pure White Background, Black Axis, 100% Original Logic Replication
 # ==============================================================================
 
-# [0. 锁定工作目录]
+# [0. Lock working directory]
 setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
-# 1. 环境准备与包加载
+# 1. Environment setup and package loading
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(readr, dplyr, tidyr, stringr, ggplot2, ggsci, ggpubr, ggrepel, openxlsx, limma, ggrastr)
 
-# [铁律 1: 路径配置标准化]
+# [Rule 1: Standardized path configuration]
 INPUT_DIR  <- "01_Clean_Data"
 CLIN_FILE  <- file.path(INPUT_DIR, "Clinical_Master_Strict.csv")
 OUT_DIR    <- "03_Results/Fig_2"
 if(!dir.exists(OUT_DIR)) dir.create(OUT_DIR, recursive = TRUE)
 
-# 【核心风格定制】：纯净黑白学术风格
+# [Core style customization]: Pure black and white academic style
 my_clean_theme <- theme_bw(base_size = 14) +
   theme(
-    panel.grid.major = element_blank(),       # 移除背景灰色虚线
-    panel.grid.minor = element_blank(),       # 移除背景灰色虚线
-    axis.line = element_line(color = "black", linewidth = 0.8), # 坐标轴纯黑
-    axis.ticks = element_line(color = "black"),                 # 刻度线纯黑
-    axis.text = element_text(color = "black", face = "bold"),   # 坐标文字纯黑加粗
+    panel.grid.major = element_blank(),       
+    panel.grid.minor = element_blank(),       
+    axis.line = element_line(color = "black", linewidth = 0.8), 
+    axis.ticks = element_line(color = "black"),                 
+    axis.text = element_text(color = "black", face = "bold"),   
     axis.title = element_text(color = "black", face = "bold"),
-    strip.background = element_blank(),                         # 分面背景透明
+    strip.background = element_blank(),                         
     strip.text = element_text(color = "black", face = "bold", size = 16),
-    panel.border = element_blank(),                             # 移除灰色外框
+    panel.border = element_blank(),                             
     legend.position = "none",
-    aspect.ratio = 1                                            # 强制 1:1
+    aspect.ratio = 1                                            
   )
 
 # ==============================================================================
-# 2. 临床数据加载 (1:1 还原 ID 构造逻辑)
+# 2. Clinical data loading (1:1 replicated ID construction logic)
 # ==============================================================================
 cat("\n>>> [Step 1] Loading Clinical Data...")
 clin <- read_csv(CLIN_FILE, show_col_types = FALSE) %>%
   filter(!is.na(`Fat(%)`)) %>%
   mutate(
     Role_Label = case_when(Membercode == 1 ~ "Daughter", Membercode == 2 ~ "Mother", Membercode == 3 ~ "Father", TRUE ~ "Unknown"),
-    # 严格还原原始 ID：FamilyID_Role (全小写)
+    # Strictly replicate original ID: FamilyID_Role (lowercase)
     Subject_ID = tolower(paste0(FamilyID, "_", Role_Label)),
     Ind_Phenotype = ifelse(`Fat(%)` >= 30, "Obese", "Lean")
   )
 
 # ==============================================================================
-# 3. PART I: Limma 配对差异分析大扫荡 (运动前后)
+# 3. PART I: Limma paired differential analysis sweep (Pre vs Post exercise)
 # ==============================================================================
 omics_files <- list.files(INPUT_DIR, pattern = "^Cleaned_.*\\.csv", full.names = TRUE)
 all_diff_results <- list()
@@ -62,7 +62,7 @@ for (f in omics_files) {
   mat <- as.matrix(df[,-1]); rownames(mat) <- as.character(df[[1]])
   if(max(mat, na.rm = TRUE) > 100) mat <- log2(mat + 1)
   
-  # 原始样本解析逻辑
+  # Original sample parsing logic
   col_meta <- data.frame(OriginalCol = colnames(mat), stringsAsFactors = FALSE) %>%
     mutate(
       Clean_Name = tolower(gsub("_twin\\.[0-9]+", "", OriginalCol)),
@@ -71,7 +71,7 @@ for (f in omics_files) {
       Subject_ID = gsub("_fast|_pre|_post1h|_post3h", "", Clean_Name)
     ) %>% inner_join(clin, by = "Subject_ID")
   
-  # 严格 Baseline & Post3h 选取
+  # Strict Baseline & Post3h selection
   base_cands <- col_meta %>% filter(TimeType %in% c("pre", "fast")) %>% arrange(Subject_ID, TimeType) %>% 
     group_by(Subject_ID) %>% dplyr::slice(1) %>% mutate(Time = "Baseline")
   post_cands <- col_meta %>% filter(TimeType == "post3h") %>% mutate(Time = "Post3h")
@@ -105,7 +105,7 @@ df_res_all <- bind_rows(all_diff_results)
 df_summary <- bind_rows(summary_counts)
 
 # ==============================================================================
-# 4. PART II: Fig. 2A 全景条形图
+# 4. PART II: Fig. 2A Global landscape bar plot
 # ==============================================================================
 cat("\n>>> Plotting Fig. 2A Landscape...")
 df_bar <- df_summary %>%
@@ -124,7 +124,7 @@ p_landscape <- ggplot(df_bar, aes(x = Label, y = Plot_Value, fill = paste(Phenot
 ggsave(file.path(OUT_DIR, "Fig2A_Response_Landscape.pdf"), p_landscape, width = 11, height = 7)
 
 # ==============================================================================
-# 5. PART III: Fig. 2B 血清代谢组火山图
+# 5. PART III: Fig. 2B Serum metabolomics volcano plot
 # ==============================================================================
 cat("\n>>> Plotting Fig. 2B Serum Volcano...")
 df_vol_meta <- df_res_all %>% filter(Dataset == "Serum_Metabonomics") %>%
@@ -146,7 +146,7 @@ p_vol_meta <- ggplot(df_vol_meta, aes(x = logFC, y = logP)) +
 ggsave(file.path(OUT_DIR, "Fig2B_Serum_Volcano.pdf"), p_vol_meta, width = 12, height = 6)
 
 # ==============================================================================
-# 6. PART IV: 基线对比 (Obese vs Lean) 
+# 6. PART IV: Baseline comparison (Obese vs Lean)
 # ==============================================================================
 cat("\n>>> Running Baseline Analysis...")
 baseline_results <- list()
@@ -173,7 +173,7 @@ for (f in omics_files) {
 }
 df_base_all <- bind_rows(baseline_results)
 
-# 绘制基线全景图
+# Plot baseline global landscape
 df_base_sum <- df_base_all %>% group_by(Dataset) %>%
   summarise(Total = n(), Up_Obese = sum(P.Value < 0.05 & logFC > 0.263, na.rm=T), Up_Lean = sum(P.Value < 0.05 & logFC < -0.263, na.rm=T), .groups="drop") %>%
   mutate(Label = paste0(str_split(Dataset, "_", simplify = T)[,1], "\n(", str_split(Dataset, "_", simplify = T)[,2], ")"),
@@ -190,7 +190,7 @@ p_base_landscape <- ggplot(df_base_sum, aes(x = Label, y = PlotV, fill = Dir)) +
 ggsave(file.path(OUT_DIR, "Fig2_Baseline_Global_Landscape.pdf"), p_base_landscape, width = 8, height = 7)
 
 # ==============================================================================
-# 7. PART V: 基线按组织拆分火山图 (1:1 复刻高级渲染)
+# 7. PART V: Baseline volcano plots by tissue (1:1 replicated advanced rendering)
 # ==============================================================================
 cat("\n>>> Generating Baseline Tissue Volcanos (ggrastr)...")
 df_base_plot <- df_base_all %>%
@@ -219,13 +219,13 @@ for(g in c("Main_Triad", "Supp")) {
 }
 
 # ==============================================================================
-# 8. PART VI: 分开保存 Table S1 & S2
+# 8. PART VI: Save supplementary data tables separately
 # ==============================================================================
 cat("\n>>> Exporting Supplementary Tables Separately...")
 write.xlsx(list("Summary" = df_summary, "Detailed_Results" = df_res_all), 
-           file.path(OUT_DIR, "Table_S1_Exercise_Response_Full.xlsx"), overwrite = TRUE)
+           file.path(OUT_DIR, "Data_Exercise_Response_Full.xlsx"), overwrite = TRUE)
 
 write.xlsx(list("Summary" = df_base_sum, "Detailed_Results" = df_base_all), 
-           file.path(OUT_DIR, "Table_S2_Baseline_Differences_Full.xlsx"), overwrite = TRUE)
+           file.path(OUT_DIR, "Data_Baseline_Differences_Full.xlsx"), overwrite = TRUE)
 
 message("\n>>> [Success] Fig. 2 Full Analysis Completed. Results in: ", OUT_DIR)

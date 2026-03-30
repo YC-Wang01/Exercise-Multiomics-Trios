@@ -2,24 +2,24 @@
 # Project: FinlandSports V2.0 
 # Script:  01_FigS1_PCA_Limma.R
 # Panel:   Fig 1E (Trajectories) & Fig S1 (Changes Proportion & Loadings)
-# Features: 离群点检测, 运动前后配对轨迹, Limma差异分析, NPG配色
+# Features: Outlier detection, Pre-Post paired trajectories, Limma, NPG palette.
 # ==============================================================================
 
-# [0. 锁定工作目录]
+# [0. Lock working directory]
 setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
-# 1. 环境准备与包加载
+# 1. Environment setup and package loading
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(readr, readxl, dplyr, tidyr, stringr, tibble, limma, ggplot2, ggrepel, openxlsx)
 
-# [铁律 1: 路径标准化]
+# [Rule 1: Path Standardization]
 INPUT_DIR <- "01_Clean_Data"
-OUT_FIG   <- "03_Results/Fig_S1"      # 附件图存放地
-OUT_STATS <- "03_Results/Summary_Stats" # 统计表存放地
+OUT_FIG   <- "03_Results/Fig_S1"      
+OUT_STATS <- "03_Results/Summary_Stats" 
 dir.create(OUT_FIG, recursive = TRUE, showWarnings = FALSE)
 dir.create(OUT_STATS, recursive = TRUE, showWarnings = FALSE)
 
-# 2. 严谨的样本解析函数 (对接运动时间点)
+# 2. Strict sample parsing function (Matching exercise time points)
 parse_samples <- function(sample_ids) {
   df <- data.frame(SampleID = sample_ids, stringsAsFactors = FALSE)
   df$RawTime <- "Unknown"
@@ -41,7 +41,7 @@ prop_list <- list()
 loadings_list <- list() 
 
 # ==============================================================================
-# 3. 多组学循环处理引擎
+# 3. Multi-omics Batch Processing Engine
 # ==============================================================================
 for (f in files) {
   dataset_name <- stringr::str_remove(basename(f), "^Cleaned_")
@@ -50,7 +50,7 @@ for (f in files) {
   
   message("\n>>> Analyzing Trajectories & Diff: ", dataset_name)
   
-  # 读取数据
+  # Load Data
   df <- read_csv(f, show_col_types = FALSE)
   feat_ids <- df[[1]]; expr_mat <- as.matrix(df[, -1]); rownames(expr_mat) <- feat_ids
   
@@ -58,7 +58,7 @@ for (f in files) {
   col_meta <- parse_samples(clean_sample_names)
   col_meta$OriginalSampleID <- colnames(expr_mat)
   
-  # 定义分析组别 (Baseline vs Exercise)
+  # Define Analysis Groups (Baseline vs Exercise)
   base_tp <- if("pre" %in% col_meta$RawTime) "pre" else if("fast" %in% col_meta$RawTime) "fast" else "Unknown"
   exe_tp  <- if("post3h" %in% col_meta$RawTime) "post3h" else "Unknown"
   col_meta$AnalysisGroup <- "Unknown"
@@ -69,18 +69,18 @@ for (f in files) {
   if(length(valid_idx) < 3) next
   mat_valid <- expr_mat[, valid_idx]; meta_valid <- col_meta[valid_idx, ]
   
-  # 4. 离群点检测与 PCA
+  # 4. PCA and Outlier Detection
   pca_res <- prcomp(t(mat_valid), scale. = TRUE)
   pca_df <- as.data.frame(pca_res$x[, 1:2]) %>% mutate(OriginalSampleID = rownames(.)) %>%
     left_join(meta_valid, by="OriginalSampleID")
   
-  # 5. 提取 PC Loadings (保存至统计目录)
+  # 5. Extract PC Loadings (Save to statistics directory)
   loadings <- as.data.frame(pca_res$rotation[, 1:2]) %>% rownames_to_column("Feature")
   top_pc1 <- loadings %>% arrange(desc(abs(PC1))) %>% head(30) %>% mutate(Component="PC1")
   top_pc2 <- loadings %>% arrange(desc(abs(PC2))) %>% head(30) %>% mutate(Component="PC2")
   loadings_list[[dataset_name]] <- bind_rows(top_pc1, top_pc2)
   
-  # 6. 绘图：运动轨迹 (Fig 1E)
+  # 6. Plotting: Individual Trajectories (Fig 1E)
   role_colors <- c("Father" = "#4DBBD5", "Mother" = "#E64B35", "Daughter" = "#00A087")
   
   pca_paired <- pca_df %>% group_by(Subject_ID) %>% filter(n() == 2) %>% 
@@ -100,7 +100,7 @@ for (f in files) {
   
   ggsave(file.path(OUT_FIG, paste0("Fig1E_Trajectory_", dataset_name, ".pdf")), p_base, width = 6, height = 5)
   
-  # 7. Limma 差异分析 (Exercise vs Baseline)
+  # 7. Limma Differential Analysis (Exercise vs Baseline)
   if(length(unique(meta_valid$AnalysisGroup)) == 2) {
     Subject <- factor(meta_valid$Subject_ID)
     Group   <- factor(meta_valid$AnalysisGroup, levels = c("Baseline", "Exercise"))
@@ -112,7 +112,7 @@ for (f in files) {
     
     write_csv(res, file.path(OUT_STATS, paste0("Limma_Exercise_vs_Baseline_", dataset_name, ".csv")))
     
-    # 统计上调/下调比例 (FC > 1.2 即 logFC > 0.263)
+    # Calculate proportions (Threshold: P < 0.05 and |FC| > 1.2, i.e., |logFC| > 0.263)
     total <- nrow(res)
     n_up  <- sum(res$P.Value < 0.05 & res$logFC > 0.263)
     n_dn  <- sum(res$P.Value < 0.05 & res$logFC < -0.263)
@@ -120,10 +120,10 @@ for (f in files) {
   }
 }
 
-# 8. 导出汇总结果
+# 8. Export Summary Results
 if(length(loadings_list) > 0) write.xlsx(loadings_list, file.path(OUT_STATS, "PCA_Top_Loadings.xlsx"))
 
-# 9. 绘制 Proportion of Changes 柱状图 (Fig S1)
+# 9. Plot: Proportion of Changes Bar Plot (Fig S1)
 if(length(prop_list) > 0) {
   df_bar <- bind_rows(prop_list) %>%
     mutate(Pct_Up = (Up/Total)*100, Pct_Dn = -(Down/Total)*100) %>%

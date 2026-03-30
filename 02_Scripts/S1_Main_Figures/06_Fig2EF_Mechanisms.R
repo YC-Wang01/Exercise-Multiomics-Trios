@@ -19,7 +19,7 @@ pacman::p_load(
   patchwork, ggrepel, cowplot, gridExtra, limma, tibble
 )
 
-# --- GLOBAL PATH CONFIGURATION (V2.0 规范化) ---
+# --- GLOBAL PATH CONFIGURATION (V2.0 Standard) ---
 
 DIR_DATA_OMICS <- "01_Clean_Data"
 DIR_ROOT_OUT   <- "03_Results/Fig_2/Fig2EF_Mechanisms"
@@ -36,16 +36,16 @@ message("   Tables Dir: ", DIR_TABLES)
 # PART 0: Transcriptome-Proteome Correlation (Generating Drivers)
 # ==============================================================================
 message("\n>>> Starting PART 0: Generating Drivers (Transcriptome-Proteome Correlation)...")
-SUPP_TABLE_LIST <<- list() # 取消硬编码 S3，使用通用列表名
+SUPP_TABLE_LIST <<- list() 
 
-# 0.1 Load Metadata (对接 V2.0 铁律临床表)
+# 0.1 Load Metadata (Docking with V2.0 Clinical Master)
 FILE_META <- file.path(DIR_DATA_OMICS, "Clinical_Master_Strict.csv")
 if(!file.exists(FILE_META)) stop("Metadata file missing at: ", FILE_META)
 
 meta_data <- read_csv(FILE_META, show_col_types = FALSE) %>%
   mutate(
     Sample_Key = paste(FamilyID, Membercode, sep="_"),
-    Fat_percent = `Fat(%)`, # 还原为原始代码使用的变量名
+    Fat_percent = `Fat(%)`, 
     Group = case_when(
       Fat_percent >= 30 ~ "Obese",
       Fat_percent < 30 ~ "Lean",
@@ -146,8 +146,7 @@ plot_omics_correlation <- function(limma_trans, limma_prot, tissue_name) {
   message(paste("   >>> Driver File Generated:", driver_filename))
 }
 
-# 0.3 Execute Part 0
-# 替换为 Cleaned_CSV
+# 0.3 Execute Part
 adi_trans <- run_limma("Cleaned_Adipose_Microarray.csv", "Transcriptome")
 adi_prot  <- run_limma("Cleaned_Adipose_Proteomics.csv", "Proteomics")
 if(!is.null(adi_trans) & !is.null(adi_prot)) plot_omics_correlation(adi_trans, adi_prot, "Adipose")
@@ -161,7 +160,6 @@ if(!is.null(mus_trans) & !is.null(mus_prot)) plot_omics_correlation(mus_trans, m
 # PART 1: Heritability Analysis (Microarray & Proteomics)
 # ==============================================================================
 message("\n>>> Starting PART 1: Heritability Analysis (Stats, Heatmaps, Violins)...")
-# Config for Part 1 (匹配 Cleaned 数据和生成的 Driver 名字)
 USER_CONFIG_P1 <- list(
   list(Tissue = "Adipose", Type = "Microarray", File = "Cleaned_Adipose_Microarray.csv",  Driver = "Fig2E_Correlation_Adipose_Drivers.xlsx"),
   list(Tissue = "Adipose", Type = "Proteomics", File = "Cleaned_Adipose_Proteomics.csv",  Driver = "Fig2E_Correlation_Adipose_Drivers.xlsx"),
@@ -508,10 +506,10 @@ if(!is.null(res_mus)) {
 }
 
 # ==============================================================================
-# [终极生成] 压制附表
+# [Final Output] Save supplementary data tables
 # ==============================================================================
 write.xlsx(SUPP_TABLE_LIST, file.path(DIR_TABLES, "Data_Molecular_Mechanisms.xlsx"), overwrite = TRUE)
-message("  -> Data (Molecular Mechanisms) 终极附表保存成功！")
+message("  -> Data (Molecular Mechanisms) summary table saved successfully!")
 message("\n========================================================")
 message(">>> ALL TASKS COMPLETED SUCCESSFULLY.")
 message(">>> Results saved in: ", DIR_ROOT_OUT)

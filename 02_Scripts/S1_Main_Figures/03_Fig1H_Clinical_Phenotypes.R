@@ -1,21 +1,21 @@
 # ==============================================================================
 # Project: FinlandSports V2.0 
 # Script:  03_Fig1H_Clinical_Phenotypes.R
-# Description: 临床表型双表合并与箱线图排版 (Fig 1H)
-# Features: 强制 1:1 正方形, 智能小数刻度引擎, Fat(%) 断言, 类型强对齐
+# Description: Clinical phenotypes dual-table merge and boxplot formatting (Fig 1H)
+# Features: Enforced 1:1 square ratio, smart decimal scale engine, Fat(%) assertion, strict type alignment
 # ==============================================================================
 
-# [0. 锁定全局工作目录]
+# [0. Lock global working directory]
 setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(readr, readxl, dplyr, stringr, ggplot2, ggpubr, gridExtra, scales)
 
 # ==============================================================================
-# 1. 环境与相对路径设置
+# 1. Environment and relative path setup
 # ==============================================================================
 IN_CLINICAL <- "01_Clean_Data/Clinical_Master_Strict.csv"
-VOL_FILE    <- "00_Raw_Data/VolunteerData.xlsx"  # 精准制导
+VOL_FILE    <- "00_Raw_Data/VolunteerData.xlsx"  
 OUT_DIR     <- "03_Results/Fig_1/Panel_H_Clinical"
 
 if(!dir.exists(OUT_DIR)) dir.create(OUT_DIR, recursive = TRUE)
@@ -37,14 +37,14 @@ theme_clean <- theme_bw(base_size = 15) +
   )
 
 # ==============================================================================
-# 2. 智能联表与 Fat(%) 分组 (附加强制类型对齐引擎)
+# 2. Smart join and Fat(%) grouping (with strict type alignment engine)
 # ==============================================================================
 cat("\n>>> [Step 1] Loading and Joining Data...\n")
 
-if(!file.exists(IN_CLINICAL)) stop(paste("FATAL ERROR: 无法找到临床主表，请检查:", IN_CLINICAL))
-if(!file.exists(VOL_FILE)) stop(paste("FATAL ERROR: 无法找到志愿者表，请检查:", VOL_FILE))
+if(!file.exists(IN_CLINICAL)) stop(paste("FATAL ERROR: Cannot find clinical master table, please check:", IN_CLINICAL))
+if(!file.exists(VOL_FILE)) stop(paste("FATAL ERROR: Cannot find volunteer table, please check:", VOL_FILE))
 
-# 【核心修正】：在读取临床主表时，强制将主键对齐为 Character 和 Numeric
+# [Core Fix]: Force primary keys to Character and Numeric during clinical master load
 clin_master <- read_csv(IN_CLINICAL, show_col_types = FALSE) %>%
   mutate(
     FamilyID = as.character(FamilyID), 
@@ -53,7 +53,7 @@ clin_master <- read_csv(IN_CLINICAL, show_col_types = FALSE) %>%
   filter(!is.na(`Fat(%)`)) %>%
   mutate(Phenotype = ifelse(`Fat(%)` >= 30, "Obese", "Lean"))
 
-# 读取指定的 Excel 文件 (顺便修正可能存在的列名拼写错误，如 FaimlyID)
+# Load specified Excel file (and fix potential typos like FaimlyID)
 vol_df <- read_excel(VOL_FILE)
 colnames(vol_df)[1:2] <- c("FamilyID", "Membercode")
 vol_df <- vol_df %>% 
@@ -62,11 +62,11 @@ vol_df <- vol_df %>%
     Membercode = as.numeric(Membercode)
   )
 
-# 去除可能存在的重复列（保留 vol_df 中的新数据）
+# Remove potential overlapping columns (keep new data from vol_df)
 overlap_cols <- setdiff(intersect(colnames(clin_master), colnames(vol_df)), c("FamilyID", "Membercode"))
 if(length(overlap_cols) > 0) clin_master <- clin_master %>% dplyr::select(-all_of(overlap_cols))
 
-# 终极缝合与因子化 (现在类型绝对一致，绝不报错)
+# Ultimate merge and factorization (types are now strictly aligned to prevent errors)
 merged_df <- clin_master %>%
   inner_join(vol_df, by = c("FamilyID", "Membercode")) %>%
   mutate(
@@ -78,7 +78,7 @@ merged_df <- clin_master %>%
   )
 
 # ==============================================================================
-# 3. 变量字典与全自动化分析引擎
+# 3. Variable dictionary and fully automated analysis engine
 # ==============================================================================
 vars_to_plot <- c(
   "Fat mass (kg)", "Lean mass (kg)", "Bone mass (kg)", "BMI", 
@@ -132,7 +132,6 @@ create_boxplot <- function(var_name_key) {
   clean_min <- min(df_sub$Value, na.rm = TRUE)
   clean_max <- max(df_sub$Value, na.rm = TRUE)
   
-  # 硬核定长刻度算法
   n_intervals <- 4  
   
   R <- clean_max - clean_min
@@ -226,7 +225,7 @@ create_boxplot <- function(var_name_key) {
 }
 
 # ==============================================================================
-# 4. 批量生成并超级拼图
+# 4. Batch generation and super-patchwork
 # ==============================================================================
 cat("\n>>> [Step 2] Generating Plots with Smart Decimal Logic...\n")
 plot_list <- list()
@@ -249,7 +248,7 @@ if(length(plot_list) > 0) {
     do.call(grid.arrange, c(subset_plots, ncol=3))
   }
   dev.off()
-  cat("\n>>> 任务圆满完成！\n存放于:", OUT_DIR, "\n")
+  cat("\n>>> Task completed successfully!\nSaved to:", OUT_DIR, "\n")
 } else {
-  cat("\nError: 未生成任何图片，请检查联表结果或变量名称匹配情况。\n")
+  cat("\nError: No plots generated, please check the joined table or variable name matching.\n")
 }

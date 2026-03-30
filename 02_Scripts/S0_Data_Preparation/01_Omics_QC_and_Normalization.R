@@ -18,7 +18,7 @@ qc_dir <- "01_Clean_Data/QC_Metrics"
 dir.create(qc_dir, showWarnings = FALSE, recursive = TRUE)
 
 # ==============================================================================
-# 核心处理引擎 (The Engine)
+# Core Processing Engine
 # ==============================================================================
 process_omics <- function(file_name, type, sheet = 1) {
   message("\n>>> Processing: ", file_name, " [", type, "]")
@@ -28,7 +28,7 @@ process_omics <- function(file_name, type, sheet = 1) {
     return(NULL)
   }
   
-  # 1. 强力读取与特征 ID 锁定
+  # 1. Robust loading and Feature ID locking
   df <- tryCatch({ read_excel(full_path, sheet = sheet, na = c("", "NA", "NaN", "0")) },
                  error = function(e) { read_excel(full_path, sheet = 1, na = c("", "NA", "NaN", "0")) })
   
@@ -46,7 +46,7 @@ process_omics <- function(file_name, type, sheet = 1) {
     colnames(mat) <- make.unique(colnames(mat), sep = "_twin.")
   }
   
-  # 2. 异物清除 (KRT Contaminant Removal for Proteomics)
+  # 2. Contaminant Removal (KRT for Proteomics)
   if (type %in% c("Tissue_Prot", "Serum_Prot")) {
     is_krt <- grepl("^KRT[0-9]+", rownames(mat), ignore.case = TRUE)
     if (sum(is_krt) > 0) {
@@ -55,17 +55,17 @@ process_omics <- function(file_name, type, sheet = 1) {
     }
   }
   
-  # 3. 缺失值过滤与算法分支分流 (The Bifurcation Point)
+  # 3. NA filtering and algorithmic bifurcation
   if (type %in% c("Tissue_Prot", "Serum_Prot", "Metabolomics")) {
-    # 质谱类 (Mass Spec): 容许少量 NA，剔除极度缺失项 (>20% NA)
+    # Mass Spec: Allow minor NAs, remove highly missing features (>20% NA)
     keep_na <- rowSums(!is.na(mat)) >= (ncol(mat) * 0.8)
     mat <- mat[keep_na, , drop = FALSE]
     
-    # Log2 变换
+    # Log2 Transformation
     mat <- log2(mat)
     mat[is.infinite(mat)] <- NA
     
-    # Perseus-style Imputation (极小值填充模拟检测限以下)
+    # Perseus-style Imputation (down-shift to simulate below limit of detection)
     if(sum(is.na(mat)) > 0) {
       valid_vals <- mat[!is.na(mat)]
       fill_mu <- mean(valid_vals) - 1.8 * sd(valid_vals)
@@ -76,19 +76,19 @@ process_omics <- function(file_name, type, sheet = 1) {
       message("  [+] Executed Perseus-style down-shift imputation.")
     }
     
-    # Median Sweep 归一化
+    # Median Sweep Normalization
     sm <- apply(mat, 2, median, na.rm=TRUE)
     mat <- sweep(mat, 2, median(sm) - sm, "+")
     
   } else {
-    # 芯片类 (Microarray/Methylation): Quantile 归一化
+    # Microarray/Methylation: Quantile Normalization
     rnames <- rownames(mat); cnames <- colnames(mat)
     mat <- limma::normalizeQuantiles(mat)
     rownames(mat) <- rnames; colnames(mat) <- cnames
     message("  [+] Executed limma::normalizeQuantiles.")
   }
   
-  # 4. 导出纯净表达矩阵
+  # 4. Export purified expression matrix
   clean_name <- tools::file_path_sans_ext(file_name)
   df_out <- as.data.frame(mat) %>% tibble::rownames_to_column("FeatureID")
   write_csv(df_out, file.path(output_dir, paste0("Cleaned_", clean_name, ".csv")))
@@ -96,22 +96,22 @@ process_omics <- function(file_name, type, sheet = 1) {
 }
 
 # ==============================================================================
-# 执行批处理阵列 (Batch Execution)
+# Batch Execution Array
 # ==============================================================================
 message("\n>>> INITIATING OMICS NORMALIZATION PIPELINE...")
 
-# 脂肪组织
+# Adipose Tissue
 process_omics("Adipose_Microarray.xlsx",  type = "Microarray")
 process_omics("Adipose_Proteomics.xlsx",  type = "Tissue_Prot")
 process_omics("Adipose_Methylation.xlsx", type = "Methylation")
 
-# 肌肉组织
+# Muscle Tissue
 process_omics("Muscle_Microarray.xlsx",   type = "Microarray")
 process_omics("Muscle_Proteomics.xlsx",   type = "Tissue_Prot")
 process_omics("Muscle_Methylation.xlsx",  type = "Methylation")
 
-# 血清组学
+# Serum Omics
 process_omics("Serum_Proteomics.xlsx",    type = "Serum_Prot")
-process_omics("Serum_Metabonomics.xlsx",  type = "Metabolomics") # 自动尝试 Sheet1/2 容错在核心引擎中处理
-
+process_omics("Serum_Metabonomics.xlsx",  type = "Metabolomics") 
+# Auto fallback for Sheet1/2 is handled within the core engine
 message("\n>>> ALL OMICS MATRICES PURIFIED AND NORMALIZED.")
