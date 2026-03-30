@@ -1,10 +1,6 @@
-# FinlandSports V2.0: ATM Multi-omics Analysis Pipeline
-
-## Project Overview
-This repository contains the complete analytical pipeline for the "FinlandSports (ATM)" multi-omics research project. Our study aims to explore the molecular mechanisms of exercise-induced systemic responses and inter-tissue crosstalk (Adipose-Muscle-Serum) through the integration of transcriptomics, proteomics, metabolomics, and DNA methylation data.
-
-## Directory Structure
-The repository is systematically organized into data, scripts, and results:
+文件夹 PATH 列表
+卷序列号为 D2EA-6F12
+C:.
 |   .gitignore
 |   .Rhistory
 |   Exercise-Multiomics-Trios.Rproj
