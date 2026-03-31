@@ -1,5 +1,5 @@
 # FinlandSports: Multi-Omics Landscape of Exercise Intervention (V2.0)
-
+[![DOI](https://zenodo.org/badge/1195134340.svg)](https://doi.org/10.5281/zenodo.19343366)
 [![R Version](https://img.shields.io/badge/R-v4.4.0-blue.svg)](https://cran.r-project.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Reproducibility](https://img.shields.io/badge/Reproducibility-100%25-brightgreen.svg)]()
