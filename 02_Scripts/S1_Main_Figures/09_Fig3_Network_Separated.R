@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------
 # [0] Environment and Path Initialization
 # ------------------------------------------------------------------------------
-setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
+# setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(

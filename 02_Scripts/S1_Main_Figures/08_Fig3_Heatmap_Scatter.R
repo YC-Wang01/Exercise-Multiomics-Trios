@@ -13,7 +13,7 @@
 # ------------------------------------------------------------------------------
 # STEP 0: SETUP & LIBRARIES
 # ------------------------------------------------------------------------------
-setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
+# setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(

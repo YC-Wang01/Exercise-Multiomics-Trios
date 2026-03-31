@@ -6,7 +6,7 @@
 # ==============================================================================
 
 # [0] Global Environment Setup
-setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
+# setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
 if (!require("pacman")) install.packages("pacman")
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")

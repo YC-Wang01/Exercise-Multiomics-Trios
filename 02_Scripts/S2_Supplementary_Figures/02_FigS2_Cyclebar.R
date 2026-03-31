@@ -12,7 +12,7 @@
 # ==============================================================================
 # [0] PATHS & CONFIGURATION
 # ==============================================================================
-setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
+# setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 CONF_OUT_ROOT   <- "03_Results/Fig_S2/Cyclebar"
 CONF_OMICS_DIR  <- "01_Clean_Data"
 CONF_META_FILE  <- file.path(CONF_OMICS_DIR, "Clinical_Master_Strict.csv")

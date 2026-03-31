@@ -1,313 +1,291 @@
-�ļ��� PATH �б�
-�����к�Ϊ D2EA-6F12
-C:.
-|   .gitignore
-|   .Rhistory
-|   Exercise-Multiomics-Trios.Rproj
-|   project_structure.txt
-|   project_tree.txt
-|   README.md
-|   
-+---00_Raw_Data
-|       Adipose_Methylation.xlsx
-|       Adipose_Microarray.xlsx
-|       Adipose_Proteomics.xlsx
-|       Clinical_Data_Raw.xlsx
-|       Muscle_Methylation.xlsx
-|       Muscle_Microarray.xlsx
-|       Muscle_Proteomics.xlsx
-|       Serum_Metabonomics.xlsx
-|       Serum_Proteomics.xlsx
-|       VolunteerData.xlsx
-|       
-+---01_Clean_Data
-|       Cleaned_Adipose_Methylation.csv
-|       Cleaned_Adipose_Microarray.csv
-|       Cleaned_Adipose_Proteomics.csv
-|       Cleaned_Muscle_Methylation.csv
-|       Cleaned_Muscle_Microarray.csv
-|       Cleaned_Muscle_Proteomics.csv
-|       Cleaned_Serum_Metabonomics.csv
-|       Cleaned_Serum_Proteomics.csv
-|       Clinical_Master_Strict.csv
-|       Project_Sample_Sheet.csv
-|       
-+---02_Scripts
-|   +---S0_Data_Preparation
-|   |       00_Clinical_Purification.R
-|   |       01_Omics_QC_and_Normalization.R
-|   |       
-|   +---S1_Main_Figures
-|   |       01_Fig1D_CV_Analysis.R
-|   |       02_Fig1D_PCA_Distance.R
-|   |       03_Fig1H_Clinical_Phenotypes.R
-|   |       04_Fig2AB_Differential_Analysis.R
-|   |       05_Fig2CD_S2_GSEA_Network.R
-|   |       06_Fig2EF_Mechanisms.R
-|   |       07_Fig3A_Serum_TimeSeries.R
-|   |       08_Fig3_Heatmap_Scatter.R
-|   |       09_Fig3_Network_Separated.R
-|   |       10_Fig3_WGCNA_Integrated.R
-|   |       11_Fig3F_Contributors_Heatmap_Triangle.R
-|   |       
-|   \---S2_Supplementary_Figures
-|           01_FigS1_PCA_Limma.R
-|           02_FigS2_Cyclebar.R
-|           03_FigS2_Clinical_GSEA_Crosstalk.R
-|           
-\---03_Results
-    +---Fig_1
-    |   +---Panel_D_CV
-    |   |       CV_Data_Baseline_All_Obese_Lean_Raw.csv
-    |   |       CV_Summary_Stats_Baseline_All_Obese_Lean.csv
-    |   |       FigS1_CV_Baseline_All_ScatterBox.pdf
-    |   |       FigS1_CV_Baseline_Lean_ScatterBox.pdf
-    |   |       FigS1_CV_Baseline_Obese_ScatterBox.pdf
-    |   |       
-    |   +---Panel_D_PCA
-    |   |       Fig-1D-Common-Legend.pdf
-    |   |       Fig-1D-Dist-Adipose-Proteomics.pdf
-    |   |       Fig-1D-Dist-Muscle-Proteomics.pdf
-    |   |       Fig-1D-Dist-Serum-Proteomics.pdf
-    |   |       Fig-1D-PCA-Adipose-Proteomics.pdf
-    |   |       Fig-1D-PCA-Muscle-Proteomics.pdf
-    |   |       Fig-1D-PCA-Serum-Metabonomics.pdf
-    |   |       Fig-1D-PCA-Serum-Proteomics.pdf
-    |   |       Fig-1D-SourceData.xlsx
-    |   |       
-    |   \---Panel_H_Clinical
-    |           Box_Phenotype_AEE__kcal_day_.pdf
-    |           Box_Phenotype_BMI.pdf
-    |           Box_Phenotype_Bone_mass__kg_.pdf
-    |           Box_Phenotype_Carbohydrate__E__.pdf
-    |           Box_Phenotype_Fat_mass__kg_.pdf
-    |           Box_Phenotype_Fat__E__.pdf
-    |           Box_Phenotype_IEE__kcal_day_.pdf
-    |           Box_Phenotype_Lean_mass__kg_.pdf
-    |           Box_Phenotype_Liverfat____.pdf
-    |           Box_Phenotype_Protein__E__.pdf
-    |           Box_Phenotype_REE__kcal_day_.pdf
-    |           Box_Phenotype_Subcutaneous_fat__kg_.pdf
-    |           Box_Phenotype_TEE__kcal_day_.pdf
-    |           Box_Phenotype_Visceral_fat__kg_.pdf
-    |           Box_Phenotype_VO2max__ml_kg_min_.pdf
-    |           Box_Phenotype_Waist_circumference__cm_.pdf
-    |           Combined_Fig1H_Clinical_Comparison.pdf
-    |           
-    +---Fig_2
-    |   |   Fig2A_Response_Landscape.pdf
-    |   |   Fig2B_Serum_Volcano.pdf
-    |   |   Fig2C_GSEA_Comparison_Matrix_Ultra_Compact.pdf
-    |   |   Fig2D_Ultimate_Crosstalk_Network.pdf
-    |   |   Fig2_Baseline_Global_Landscape.pdf
-    |   |   Fig2_Baseline_Volcano_Main_Triad.pdf
-    |   |   Fig2_Baseline_Volcano_Supp.pdf
-    |   |   Table_S1_Exercise_Response_Full.xlsx
-    |   |   Table_S2_Baseline_Differences_Full.xlsx
-    |   |   
-    |   +---Fig2EF_Mechanisms
-    |   |       Fig2E_Correlation_Adipose.pdf
-    |   |       Fig2E_Correlation_Adipose_Drivers.xlsx
-    |   |       Fig2E_Correlation_Muscle.pdf
-    |   |       Fig2E_Correlation_Muscle_Drivers.xlsx
-    |   |       Fig2F_Heatmap_ObesitySigGenes_Adipose_Microarray.pdf
-    |   |       Fig2F_Heatmap_ObesitySigGenes_Adipose_Proteomics.pdf
-    |   |       Fig2F_Heatmap_ObesitySigGenes_Muscle_Microarray.pdf
-    |   |       Fig2F_Heatmap_ObesitySigGenes_Muscle_Proteomics.pdf
-    |   |       Fig2F_Legend_Heatmap.pdf
-    |   |       Fig2F_Legend_Mechanism.pdf
-    |   |       Fig2F_Mechanism_Plot_Adipose.pdf
-    |   |       Fig2F_Mechanism_Plot_Muscle.pdf
-    |   |       Fig2F_Scatter_ObesitySigGenes_Adipose_Microarray.pdf
-    |   |       Fig2F_Scatter_ObesitySigGenes_Adipose_Proteomics.pdf
-    |   |       Fig2F_Scatter_ObesitySigGenes_Muscle_Microarray.pdf
-    |   |       Fig2F_Scatter_ObesitySigGenes_Muscle_Proteomics.pdf
-    |   |       Fig2F_Square_CLIP1.pdf
-    |   |       Fig2F_Square_MALSU1.pdf
-    |   |       Fig2F_Square_MAP3K5.pdf
-    |   |       Fig2F_Square_SPARC.pdf
-    |   |       
-    |   +---Serum-meta
-    |   |       Fig2A_Adipose_Transcriptome_GSEA_Full.csv
-    |   |       Fig2B_Adipose_Proteomics_GSEA_Full.csv
-    |   |       Fig2C_Muscle_Transcriptome_GSEA_Full.csv
-    |   |       Fig2D_Muscle_Proteomics_GSEA_Full.csv
-    |   |       
-    |   \---Tables
-    |           Data_Molecular_Mechanisms.xlsx
-    |           GSEA_Full_Results.xlsx
-    |           Network_and_Crosstalk_Details.xlsx
-    |           
-    +---Fig_3
-    |   +---Fig3_Contributors
-    |   |       Adipose_Heatmap.pdf
-    |   |       Adipose_Triangle_Plot.pdf
-    |   |       Data_S6_Triangle_Drivers.xlsx
-    |   |       Fig3F_Standalone_Legend.pdf
-    |   |       Muscle_Heatmap.pdf
-    |   |       Muscle_Triangle_Plot.pdf
-    |   |       Serum_Metabonomics_Heatmap.pdf
-    |   |       Serum_Metabonomics_Triangle_Plot.pdf
-    |   |       Serum_Proteomics_Heatmap.pdf
-    |   |       Serum_Proteomics_Triangle_Plot.pdf
-    |   |       
-    |   +---Fig3_Network
-    |   |       Fig3_Network_Lean_LegendOnly.pdf
-    |   |       Fig3_Network_Lean_MainPlot.pdf
-    |   |       Fig3_Network_Obese_LegendOnly.pdf
-    |   |       Fig3_Network_Obese_MainPlot.pdf
-    |   |       Table_Network_Edges_Lean.csv
-    |   |       Table_Network_Edges_Obese.csv
-    |   |       Table_Network_Nodes_Lean.csv
-    |   |       Table_Network_Nodes_Obese.csv
-    |   |       
-    |   +---Fig3_Serum_TimeSeries
-    |   |       Cleaned_Serum_Metabonomics_Fig3A_Clusters_Gradient.pdf
-    |   |       Cleaned_Serum_Metabonomics_Fig3B_Representative_Targets.pdf
-    |   |       Cleaned_Serum_Metabonomics_Fig3C_DoubleRing_Integrated.pdf
-    |   |       Cleaned_Serum_Proteomics_Fig3A_Clusters_Gradient.pdf
-    |   |       Cleaned_Serum_Proteomics_Fig3B_Representative_Targets.pdf
-    |   |       Cleaned_Serum_Proteomics_Fig3C_DoubleRing_Integrated.pdf
-    |   |       Data_TimeSeries_Clusters.xlsx
-    |   |       
-    |   +---Heatmap_and_Scatter
-    |   |       Data_Comprehensive_Limma_Crosstalk.xlsx
-    |   |       Limma_Paired_Adi_Prot.csv
-    |   |       Limma_Paired_Mus_Prot.csv
-    |   |       Limma_Paired_Ser_Meta.csv
-    |   |       Limma_Paired_Ser_Prot.csv
-    |   |       Plot_Heatmap_Crosstalk_Lean.pdf
-    |   |       Plot_Heatmap_Crosstalk_Obese.pdf
-    |   |       Plot_Scatter_1_IR_Phe.pdf
-    |   |       Plot_Scatter_2_Stress_AcAce.pdf
-    |   |       Plot_Scatter_3_AA_Gly.pdf
-    |   |       
-    |   \---WGCNA_Analysis
-    |           Data_WGCNA_Module_Traits.xlsx
-    |           Plot_Bar_CRP_Adipose.pdf
-    |           Plot_Bar_CRP_Muscle.pdf
-    |           Plot_Bubble_WGCNA_Adipose.pdf
-    |           Plot_Bubble_WGCNA_Muscle.pdf
-    |           
-    +---Fig_S1
-    |       Fig1E_Trajectory_Adipose_Methylation.pdf
-    |       Fig1E_Trajectory_Adipose_Microarray.pdf
-    |       Fig1E_Trajectory_Adipose_Proteomics.pdf
-    |       Fig1E_Trajectory_Muscle_Methylation.pdf
-    |       Fig1E_Trajectory_Muscle_Microarray.pdf
-    |       Fig1E_Trajectory_Muscle_Proteomics.pdf
-    |       Fig1E_Trajectory_Serum_Metabonomics.pdf
-    |       Fig1E_Trajectory_Serum_Proteomics.pdf
-    |       FigS1_Proportion_of_Changes.pdf
-    |       
-    +---Fig_S2
-    |   |   FigS2_Crosstalk_Proteomics_Final.pdf
-    |   |   FigS2_Crosstalk_Transcriptome_Final.pdf
-    |   |   
-    |   +---Clinical_GSEA
-    |   |   +---BMI
-    |   |   |       FigS2_Adi_Prot_BMI_GSEA.csv
-    |   |   |       FigS2_Adi_RNA_BMI_GSEA.csv
-    |   |   |       FigS2_Crosstalk_BMI_AdiposeProt_vs_MuscleProt.pdf
-    |   |   |       FigS2_Crosstalk_BMI_AdiposeRNA_vs_MuscleRNA.pdf
-    |   |   |       FigS2_Crosstalk_BMI_AdiRNA_vs_AdiProt.pdf
-    |   |   |       FigS2_Crosstalk_BMI_MusRNA_vs_MusProt.pdf
-    |   |   |       FigS2_Dotplot_Adi_Prot_BMI.pdf
-    |   |   |       FigS2_Dotplot_Adi_RNA_BMI.pdf
-    |   |   |       FigS2_Dotplot_Mus_Prot_BMI.pdf
-    |   |   |       FigS2_Dotplot_Mus_RNA_BMI.pdf
-    |   |   |       FigS2_Mus_Prot_BMI_GSEA.csv
-    |   |   |       FigS2_Mus_RNA_BMI_GSEA.csv
-    |   |   |       
-    |   |   +---CRP
-    |   |   |       FigS2_Adi_Prot_CRP_GSEA.csv
-    |   |   |       FigS2_Adi_RNA_CRP_GSEA.csv
-    |   |   |       FigS2_Crosstalk_CRP_AdiposeProt_vs_MuscleProt.pdf
-    |   |   |       FigS2_Crosstalk_CRP_AdiposeRNA_vs_MuscleRNA.pdf
-    |   |   |       FigS2_Crosstalk_CRP_AdiRNA_vs_AdiProt.pdf
-    |   |   |       FigS2_Crosstalk_CRP_MusRNA_vs_MusProt.pdf
-    |   |   |       FigS2_Dotplot_Adi_Prot_CRP.pdf
-    |   |   |       FigS2_Dotplot_Adi_RNA_CRP.pdf
-    |   |   |       FigS2_Dotplot_Mus_Prot_CRP.pdf
-    |   |   |       FigS2_Dotplot_Mus_RNA_CRP.pdf
-    |   |   |       FigS2_Mus_Prot_CRP_GSEA.csv
-    |   |   |       FigS2_Mus_RNA_CRP_GSEA.csv
-    |   |   |       
-    |   |   +---HOMA_IR
-    |   |   |       FigS2_Adi_Prot_HOMA_IR_GSEA.csv
-    |   |   |       FigS2_Adi_RNA_HOMA_IR_GSEA.csv
-    |   |   |       FigS2_Crosstalk_HOMA_IR_AdiposeProt_vs_MuscleProt.pdf
-    |   |   |       FigS2_Crosstalk_HOMA_IR_AdiposeRNA_vs_MuscleRNA.pdf
-    |   |   |       FigS2_Crosstalk_HOMA_IR_AdiRNA_vs_AdiProt.pdf
-    |   |   |       FigS2_Crosstalk_HOMA_IR_MusRNA_vs_MusProt.pdf
-    |   |   |       FigS2_Dotplot_Adi_Prot_HOMA_IR.pdf
-    |   |   |       FigS2_Dotplot_Adi_RNA_HOMA_IR.pdf
-    |   |   |       FigS2_Dotplot_Mus_Prot_HOMA_IR.pdf
-    |   |   |       FigS2_Dotplot_Mus_RNA_HOMA_IR.pdf
-    |   |   |       FigS2_Mus_Prot_HOMA_IR_GSEA.csv
-    |   |   |       FigS2_Mus_RNA_HOMA_IR_GSEA.csv
-    |   |   |       
-    |   |   \---S_TotalOC
-    |   |           FigS2_Adi_Prot_S_TotalOC_GSEA.csv
-    |   |           FigS2_Adi_RNA_S_TotalOC_GSEA.csv
-    |   |           FigS2_Crosstalk_S_TotalOC_AdiposeProt_vs_MuscleProt.pdf
-    |   |           FigS2_Crosstalk_S_TotalOC_AdiposeRNA_vs_MuscleRNA.pdf
-    |   |           FigS2_Crosstalk_S_TotalOC_AdiRNA_vs_AdiProt.pdf
-    |   |           FigS2_Crosstalk_S_TotalOC_MusRNA_vs_MusProt.pdf
-    |   |           FigS2_Dotplot_Adi_Prot_S_TotalOC.pdf
-    |   |           FigS2_Dotplot_Adi_RNA_S_TotalOC.pdf
-    |   |           FigS2_Dotplot_Mus_Prot_S_TotalOC.pdf
-    |   |           FigS2_Dotplot_Mus_RNA_S_TotalOC.pdf
-    |   |           FigS2_Mus_Prot_S_TotalOC_GSEA.csv
-    |   |           FigS2_Mus_RNA_S_TotalOC_GSEA.csv
-    |   |           
-    |   \---Cyclebar
-    |       +---ColorCycle_Adipose
-    |       |   |   FigS2_Cycle_Adipose.pdf
-    |       |   |   FigS2_Legend_Colorbar_Adipose.pdf
-    |       |   |   FigS2_Legend_Ruler_Adipose.pdf
-    |       |   |   SourceData_Adipose.xlsx
-    |       |   |   
-    |       |   \---Results_Tables
-    |       |           Limma_Methylation_ALL.xlsx
-    |       |           Limma_Methylation_SIG.xlsx
-    |       |           Limma_Proteomics_ALL.xlsx
-    |       |           Limma_Proteomics_SIG.xlsx
-    |       |           Limma_Transcriptome_ALL.xlsx
-    |       |           Limma_Transcriptome_SIG.xlsx
-    |       |           
-    |       +---ColorCycle_Muscle
-    |       |   |   FigS2_Cycle_Muscle.pdf
-    |       |   |   FigS2_Legend_Colorbar_Muscle.pdf
-    |       |   |   FigS2_Legend_Ruler_Muscle.pdf
-    |       |   |   SourceData_Muscle.xlsx
-    |       |   |   
-    |       |   \---Results_Tables
-    |       |           Limma_Methylation_ALL.xlsx
-    |       |           Limma_Methylation_SIG.xlsx
-    |       |           Limma_Proteomics_ALL.xlsx
-    |       |           Limma_Proteomics_SIG.xlsx
-    |       |           Limma_Transcriptome_ALL.xlsx
-    |       |           Limma_Transcriptome_SIG.xlsx
-    |       |           
-    |       \---ColorCycle_Serum
-    |           |   FigS2_Cycle_Serum.pdf
-    |           |   FigS2_Legend_Colorbar_Serum.pdf
-    |           |   FigS2_Legend_Ruler_Serum.pdf
-    |           |   SourceData_Serum.xlsx
-    |           |   
-    |           \---Results_Tables
-    |                   Limma_Metabolomics_ALL.xlsx
-    |                   Limma_Metabolomics_SIG.xlsx
-    |                   Limma_Proteomics_ALL.xlsx
-    |                   Limma_Proteomics_SIG.xlsx
-    |                   
-    \---Summary_Stats
-            Limma_Exercise_vs_Baseline_Adipose_Methylation.csv
-            Limma_Exercise_vs_Baseline_Adipose_Proteomics.csv
-            Limma_Exercise_vs_Baseline_Muscle_Methylation.csv
-            Limma_Exercise_vs_Baseline_Muscle_Proteomics.csv
-            Limma_Exercise_vs_Baseline_Serum_Metabonomics.csv
-            Limma_Exercise_vs_Baseline_Serum_Proteomics.csv
-            PCA_Top_Loadings.xlsx
-            
+.
+├── 00_Raw_Data
+│   ├── Adipose_Methylation.xlsx
+│   ├── Adipose_Microarray.xlsx
+│   ├── Adipose_Proteomics.xlsx
+│   ├── Clinical_Data_Raw.xlsx
+│   ├── Muscle_Methylation.xlsx
+│   ├── Muscle_Microarray.xlsx
+│   ├── Muscle_Proteomics.xlsx
+│   ├── Serum_Metabonomics.xlsx
+│   ├── Serum_Proteomics.xlsx
+│   └── VolunteerData.xlsx
+├── 01_Clean_Data
+│   ├── Cleaned_Adipose_Methylation.csv
+│   ├── Cleaned_Adipose_Microarray.csv
+│   ├── Cleaned_Adipose_Proteomics.csv
+│   ├── Cleaned_Muscle_Methylation.csv
+│   ├── Cleaned_Muscle_Microarray.csv
+│   ├── Cleaned_Muscle_Proteomics.csv
+│   ├── Cleaned_Serum_Metabonomics.csv
+│   ├── Cleaned_Serum_Proteomics.csv
+│   ├── Clinical_Master_Strict.csv
+│   └── Project_Sample_Sheet.csv
+├── 02_Scripts
+│   ├── S0_Data_Preparation
+│   │   ├── 00_Clinical_Purification.R
+│   │   └── 01_Omics_QC_and_Normalization.R
+│   ├── S1_Main_Figures
+│   │   ├── 01_Fig1D_CV_Analysis.R
+│   │   ├── 02_Fig1D_PCA_Distance.R
+│   │   ├── 03_Fig1H_Clinical_Phenotypes.R
+│   │   ├── 04_Fig2AB_Differential_Analysis.R
+│   │   ├── 05_Fig2CD_S2_GSEA_Network.R
+│   │   ├── 06_Fig2EF_Mechanisms.R
+│   │   ├── 07_Fig3A_Serum_TimeSeries.R
+│   │   ├── 08_Fig3_Heatmap_Scatter.R
+│   │   ├── 09_Fig3_Network_Separated.R
+│   │   ├── 10_Fig3_WGCNA_Integrated.R
+│   │   ├── 11_Fig3F_Contributors_Heatmap_Triangle.R
+│   │   ├── 12_Fig4A_Clinical_Networks.R
+│   │   ├── 13_Fig4_Integrated_Downstream.R
+│   │   ├── 14_Fig5A_VO2max_CRP_Correlation.R
+│   │   ├── 15_Fig5C_CRP_CyclePlot.R
+│   │   ├── 16_Fig5DE_CRP_GSEA_Heatmap.R
+│   │   ├── 17_Fig5FG_CRP_Networks.R
+│   │   ├── 18_Fig6_Clinical_Indices.R
+│   │   └── 19_Fig6CDE_cOC_Mechanisms.R.R
+│   └── S2_Supplementary_Figures
+│       ├── 01_FigS1_PCA_Limma.R
+│       ├── 02_FigS2_Cyclebar.R
+│       ├── 03_FigS2_Clinical_GSEA_Crosstalk.R
+│       └── 04_FigS4_GSEA_Quadrant.R
+├── 03_Results
+│   ├── Fig_1
+│   │   ├── Panel_D_CV
+│   │   │   ├── CV_Data_Baseline_All_Obese_Lean_Raw.csv
+│   │   │   ├── CV_Summary_Stats_Baseline_All_Obese_Lean.csv
+│   │   │   ├── FigS1_CV_Baseline_All_ScatterBox.pdf
+│   │   │   ├── FigS1_CV_Baseline_Lean_ScatterBox.pdf
+│   │   │   └── FigS1_CV_Baseline_Obese_ScatterBox.pdf
+│   │   ├── Panel_D_PCA
+│   │   │   ├── Fig-1D-Common-Legend.pdf
+│   │   │   ├── Fig-1D-Dist-Adipose-Proteomics.pdf
+│   │   │   ├── Fig-1D-Dist-Muscle-Proteomics.pdf
+│   │   │   ├── Fig-1D-Dist-Serum-Proteomics.pdf
+│   │   │   ├── Fig-1D-PCA-Adipose-Proteomics.pdf
+│   │   │   ├── Fig-1D-PCA-Muscle-Proteomics.pdf
+│   │   │   ├── Fig-1D-PCA-Serum-Metabonomics.pdf
+│   │   │   ├── Fig-1D-PCA-Serum-Proteomics.pdf
+│   │   │   └── Fig-1D-SourceData.xlsx
+│   │   └── Panel_H_Clinical
+│   │       ├── Box_Phenotype_AEE__kcal_day_.pdf
+│   │       ├── Box_Phenotype_BMI.pdf
+│   │       ├── Box_Phenotype_Bone_mass__kg_.pdf
+│   │       ├── Box_Phenotype_Carbohydrate__E__.pdf
+│   │       ├── Box_Phenotype_Fat_mass__kg_.pdf
+│   │       ├── Box_Phenotype_Fat__E__.pdf
+│   │       ├── Box_Phenotype_IEE__kcal_day_.pdf
+│   │       ├── Box_Phenotype_Lean_mass__kg_.pdf
+│   │       ├── Box_Phenotype_Liverfat____.pdf
+│   │       ├── Box_Phenotype_Protein__E__.pdf
+│   │       ├── Box_Phenotype_REE__kcal_day_.pdf
+│   │       ├── Box_Phenotype_Subcutaneous_fat__kg_.pdf
+│   │       ├── Box_Phenotype_TEE__kcal_day_.pdf
+│   │       ├── Box_Phenotype_Visceral_fat__kg_.pdf
+│   │       ├── Box_Phenotype_VO2max__ml_kg_min_.pdf
+│   │       ├── Box_Phenotype_Waist_circumference__cm_.pdf
+│   │       └── Combined_Fig1H_Clinical_Comparison.pdf
+│   ├── Fig_2
+│   │   ├── Fig2A_Response_Landscape.pdf
+│   │   ├── Fig2B_Serum_Volcano.pdf
+│   │   ├── Fig2C_GSEA_Comparison_Matrix_Ultra_Compact.pdf
+│   │   ├── Fig2D_Ultimate_Crosstalk_Network.pdf
+│   │   ├── Fig2EF_Mechanisms
+│   │   │   ├── Fig2E_Correlation_Adipose.pdf
+│   │   │   ├── Fig2E_Correlation_Adipose_Drivers.xlsx
+│   │   │   ├── Fig2E_Correlation_Muscle.pdf
+│   │   │   ├── Fig2E_Correlation_Muscle_Drivers.xlsx
+│   │   │   ├── Fig2F_Heatmap_ObesitySigGenes_Adipose_Microarray.pdf
+│   │   │   ├── Fig2F_Heatmap_ObesitySigGenes_Adipose_Proteomics.pdf
+│   │   │   ├── Fig2F_Heatmap_ObesitySigGenes_Muscle_Microarray.pdf
+│   │   │   ├── Fig2F_Heatmap_ObesitySigGenes_Muscle_Proteomics.pdf
+│   │   │   ├── Fig2F_Legend_Heatmap.pdf
+│   │   │   ├── Fig2F_Legend_Mechanism.pdf
+│   │   │   ├── Fig2F_Mechanism_Plot_Adipose.pdf
+│   │   │   ├── Fig2F_Mechanism_Plot_Muscle.pdf
+│   │   │   ├── Fig2F_Scatter_ObesitySigGenes_Adipose_Microarray.pdf
+│   │   │   ├── Fig2F_Scatter_ObesitySigGenes_Adipose_Proteomics.pdf
+│   │   │   ├── Fig2F_Scatter_ObesitySigGenes_Muscle_Microarray.pdf
+│   │   │   ├── Fig2F_Scatter_ObesitySigGenes_Muscle_Proteomics.pdf
+│   │   │   ├── Fig2F_Square_CLIP1.pdf
+│   │   │   ├── Fig2F_Square_MALSU1.pdf
+│   │   │   ├── Fig2F_Square_MAP3K5.pdf
+│   │   │   └── Fig2F_Square_SPARC.pdf
+│   │   ├── Fig2_Baseline_Global_Landscape.pdf
+│   │   ├── Fig2_Baseline_Volcano_Main_Triad.pdf
+│   │   ├── Fig2_Baseline_Volcano_Supp.pdf
+│   │   ├── Serum-meta
+│   │   │   ├── Fig2A_Adipose_Transcriptome_GSEA_Full.csv
+│   │   │   ├── Fig2B_Adipose_Proteomics_GSEA_Full.csv
+│   │   │   ├── Fig2C_Muscle_Transcriptome_GSEA_Full.csv
+│   │   │   └── Fig2D_Muscle_Proteomics_GSEA_Full.csv
+│   │   ├── Tables
+│   │   │   ├── Data_Molecular_Mechanisms.xlsx
+│   │   │   ├── GSEA_Full_Results.xlsx
+│   │   │   └── Network_and_Crosstalk_Details.xlsx
+│   │   ├── Table_S1_Exercise_Response_Full.xlsx
+│   │   └── Table_S2_Baseline_Differences_Full.xlsx
+│   ├── Fig_3
+│   │   ├── Fig3_Contributors
+│   │   │   ├── Adipose_Heatmap.pdf
+│   │   │   ├── Adipose_Triangle_Plot.pdf
+│   │   │   ├── Data_S6_Triangle_Drivers.xlsx
+│   │   │   ├── Fig3F_Standalone_Legend.pdf
+│   │   │   ├── Muscle_Heatmap.pdf
+│   │   │   ├── Muscle_Triangle_Plot.pdf
+│   │   │   ├── Serum_Metabonomics_Heatmap.pdf
+│   │   │   ├── Serum_Metabonomics_Triangle_Plot.pdf
+│   │   │   ├── Serum_Proteomics_Heatmap.pdf
+│   │   │   └── Serum_Proteomics_Triangle_Plot.pdf
+│   │   ├── Fig3_Network
+│   │   │   ├── Fig3_Network_Lean_LegendOnly.pdf
+│   │   │   ├── Fig3_Network_Lean_MainPlot.pdf
+│   │   │   ├── Fig3_Network_Obese_LegendOnly.pdf
+│   │   │   ├── Fig3_Network_Obese_MainPlot.pdf
+│   │   │   ├── Table_Network_Edges_Lean.csv
+│   │   │   ├── Table_Network_Edges_Obese.csv
+│   │   │   ├── Table_Network_Nodes_Lean.csv
+│   │   │   └── Table_Network_Nodes_Obese.csv
+│   │   ├── Fig3_Serum_TimeSeries
+│   │   │   ├── Cleaned_Serum_Metabonomics_Fig3A_Clusters_Gradient.pdf
+│   │   │   ├── Cleaned_Serum_Metabonomics_Fig3B_Representative_Targets.pdf
+│   │   │   ├── Cleaned_Serum_Metabonomics_Fig3C_DoubleRing_Integrated.pdf
+│   │   │   ├── Cleaned_Serum_Proteomics_Fig3A_Clusters_Gradient.pdf
+│   │   │   ├── Cleaned_Serum_Proteomics_Fig3B_Representative_Targets.pdf
+│   │   │   ├── Cleaned_Serum_Proteomics_Fig3C_DoubleRing_Integrated.pdf
+│   │   │   └── Data_TimeSeries_Clusters.xlsx
+│   │   ├── Heatmap_and_Scatter
+│   │   │   ├── Data_Comprehensive_Limma_Crosstalk.xlsx
+│   │   │   ├── Limma_Paired_Adi_Prot.csv
+│   │   │   ├── Limma_Paired_Mus_Prot.csv
+│   │   │   ├── Limma_Paired_Ser_Meta.csv
+│   │   │   ├── Limma_Paired_Ser_Prot.csv
+│   │   │   ├── Plot_Heatmap_Crosstalk_Lean.pdf
+│   │   │   ├── Plot_Heatmap_Crosstalk_Obese.pdf
+│   │   │   ├── Plot_Scatter_1_IR_Phe.pdf
+│   │   │   ├── Plot_Scatter_2_Stress_AcAce.pdf
+│   │   │   └── Plot_Scatter_3_AA_Gly.pdf
+│   │   └── WGCNA_Analysis
+│   │       ├── Data_WGCNA_Module_Traits.xlsx
+│   │       ├── Plot_Bar_CRP_Adipose.pdf
+│   │       ├── Plot_Bar_CRP_Muscle.pdf
+│   │       ├── Plot_Bubble_WGCNA_Adipose.pdf
+│   │       └── Plot_Bubble_WGCNA_Muscle.pdf
+│   ├── Fig_4
+│   │   ├── Fig4A_Networks
+│   │   │   ├── Data_S7_Clinical_Associations.xlsx
+│   │   │   ├── Fig4A_Lifestyle_SplitNetwork.pdf
+│   │   │   ├── Fig4A_Metabolic_SplitNetwork_FULL_Comparison.pdf
+│   │   │   └── Fig4A_Metabolic_SplitNetwork_Golden12.pdf
+│   │   └── Fig4_Integrated_Downstream
+│   │       ├── Fig4_3Pillars_GO_HOMA.pdf
+│   │       ├── Fig4_GSEA_Plot_HOMA_Rank1_translation.pdf
+│   │       ├── Fig4_GSEA_Plot_HOMA_Rank2_mitochondrial_gene_expression.pdf
+│   │       ├── Fig4_GSEA_Plot_HOMA_Rank3_mitochondrial_translation.pdf
+│   │       ├── Fig4_GSEA_Plot_HOMA_Rank4_proteasomal_protein_catabolic_.pdf
+│   │       ├── Fig4_QuadrantPlot_Serum_HOMA.pdf
+│   │       ├── Fig4_QuadrantPlot_Tissue_HOMA.pdf
+│   │       ├── Fig4_Waterfall_Horizontal_Paired.pdf
+│   │       ├── Plot_Network_HOMAcentric_Lean_LegendOnly.pdf
+│   │       ├── Plot_Network_HOMAcentric_Lean_Main.pdf
+│   │       ├── Plot_Network_HOMAcentric_Obese_LegendOnly.pdf
+│   │       ├── Plot_Network_HOMAcentric_Obese_Main.pdf
+│   │       ├── Table_Fig4_HOMA_MathOnly.xlsx
+│   │       ├── Table_GSEA_Interaction_HOMA.xlsx
+│   │       ├── Table_S_HOMAcentric_Edges_Lean.csv
+│   │       ├── Table_S_HOMAcentric_Edges_Obese.csv
+│   │       ├── Table_S_HOMAcentric_Nodes_Lean.csv
+│   │       └── Table_S_HOMAcentric_Nodes_Obese.csv
+│   ├── Fig_5
+│   │   ├── Fig5A_VO2max_CRP
+│   │   │   ├── Fig5A_Plot_A1_Violin_Grouped.pdf
+│   │   │   ├── Fig5A_Plot_A2_Violin_Boxplot.pdf
+│   │   │   ├── Fig5A_Plot_A3_Violin_Q1vsQ4.pdf
+│   │   │   ├── Fig5A_Plot_B1_Scatter_Basic.pdf
+│   │   │   ├── Fig5A_Plot_B2_Scatter_Marginal.pdf
+│   │   │   ├── Fig5A_Plot_B3_Scatter_BinnedTrend.pdf
+│   │   │   └── Table_S_Fig5A_VO2max_Stats.xlsx
+│   │   ├── Fig5C_CRP_CyclePlot
+│   │   │   ├── Data_S8_CRP_Associations.xlsx
+│   │   │   ├── Fig5C_CyclePlot_CRP_Nature.pdf
+│   │   │   └── Fig5C_CyclePlot_Legend_CRP.pdf
+│   │   ├── Fig5DE_CRP_Downstream
+│   │   │   ├── Data_S9_CRP_Integrated_Downstream.xlsx
+│   │   │   ├── Fig5D_GSEA_Landscape.pdf
+│   │   │   ├── Fig5E_StrictIntersection_Heatmap.pdf
+│   │   │   └── Results_Tables
+│   │   └── Fig5FG_CRP_Networks
+│   │       ├── Data_S10_CRP_Network_Edges.xlsx
+│   │       ├── Fig5F_Network_Lean.pdf
+│   │       └── Fig5G_Network_Obese.pdf
+│   ├── Fig_6
+│   │   ├── Fig6CDE_cOC_Mechanisms
+│   │   │   ├── Data_S14_cOC_Heatmap_Stats.xlsx
+│   │   │   ├── Data_S15_cOC_Network_Data.xlsx
+│   │   │   ├── Fig6C_cOC_Delta_Waterfall_Heatmap.pdf
+│   │   │   ├── Fig6D_Polished_Network_Lean.pdf
+│   │   │   ├── Fig6E_Polished_Network_Obese.pdf
+│   │   │   ├── Fig6_Legend_Only_Lean.pdf
+│   │   │   └── Fig6_Legend_Only_Obese.pdf
+│   │   ├── Fig6C_cOC_Heatmap
+│   │   └── Fig6_Clinical_Indices
+│   │       ├── Comprehensive_All_Targets
+│   │       ├── Curated_Selected_Targets
+│   │       ├── Data_S11_Comprehensive_Clinical_Correlations.xlsx
+│   │       ├── Data_S12_Curated_Clinical_Correlations.xlsx
+│   │       └── Data_S13_Spatiotemporal_GSEA_Pathways.xlsx
+│   ├── Fig_S1
+│   │   ├── Fig1E_Trajectory_Adipose_Methylation.pdf
+│   │   ├── Fig1E_Trajectory_Adipose_Microarray.pdf
+│   │   ├── Fig1E_Trajectory_Adipose_Proteomics.pdf
+│   │   ├── Fig1E_Trajectory_Muscle_Methylation.pdf
+│   │   ├── Fig1E_Trajectory_Muscle_Microarray.pdf
+│   │   ├── Fig1E_Trajectory_Muscle_Proteomics.pdf
+│   │   ├── Fig1E_Trajectory_Serum_Metabonomics.pdf
+│   │   ├── Fig1E_Trajectory_Serum_Proteomics.pdf
+│   │   └── FigS1_Proportion_of_Changes.pdf
+│   ├── Fig_S2
+│   │   ├── Clinical_GSEA
+│   │   │   ├── BMI
+│   │   │   ├── CRP
+│   │   │   ├── HOMA_IR
+│   │   │   └── S_TotalOC
+│   │   ├── Cyclebar
+│   │   │   ├── ColorCycle_Adipose
+│   │   │   ├── ColorCycle_Muscle
+│   │   │   └── ColorCycle_Serum
+│   │   ├── FigS2_Crosstalk_Proteomics_Final.pdf
+│   │   └── FigS2_Crosstalk_Transcriptome_Final.pdf
+│   ├── Fig_S4
+│   │   ├── Continuous_GSEA
+│   │   │   ├── FigS4_Cnetplot_hsa00190_Circular.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_AGE_RAGE_signaling_pathway____.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Alzheimer_disease.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Citrate_cycle__TCA_cycle_.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Diabetic_cardiomyopathy.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Dilated_cardiomyopathy.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Hypertrophic_cardiomyopathy.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Insulin_signaling_pathway.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Oxidative_phosphorylation.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Thermogenesis.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Type_II_diabetes_mellitus.pdf
+│   │   │   ├── FigS4_GSEA_LinePlot_Type_I_diabetes_mellitus.pdf
+│   │   │   ├── FigS4_Quadrant_Baseline_Final.pdf
+│   │   │   ├── FigS4_Quadrant_Response_Final.pdf
+│   │   │   ├── Table_S_Continuous_GSEA_All_Results.xlsx
+│   │   │   ├── Table_S_FigS4_Quadrant_Baseline_Refined_Data.xlsx
+│   │   │   ├── Table_S_FigS4_Quadrant_Response_Refined_Data.xlsx
+│   │   │   └── Table_S_Smart_Selected_Pathways.xlsx
+│   │   └── GSEA_Results
+│   └── Summary_Stats
+│       ├── Limma_Exercise_vs_Baseline_Adipose_Methylation.csv
+│       ├── Limma_Exercise_vs_Baseline_Adipose_Proteomics.csv
+│       ├── Limma_Exercise_vs_Baseline_Muscle_Methylation.csv
+│       ├── Limma_Exercise_vs_Baseline_Muscle_Proteomics.csv
+│       ├── Limma_Exercise_vs_Baseline_Serum_Metabonomics.csv
+│       ├── Limma_Exercise_vs_Baseline_Serum_Proteomics.csv
+│       └── PCA_Top_Loadings.xlsx
+├── Exercise-Multiomics-Trios.Rproj
+├── project_tree.txt
+└── README.md

@@ -6,7 +6,7 @@
 # ==============================================================================
 
 # [0. Lock working directory]
-setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
+# setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
 # [1. Environment setup and package loading]
 set.seed(42)

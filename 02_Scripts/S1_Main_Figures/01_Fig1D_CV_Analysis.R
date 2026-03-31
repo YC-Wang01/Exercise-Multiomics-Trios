@@ -8,7 +8,7 @@
 
 # [0. Core correction: Lock project root coordinate] 
 # This is the only absolute path. All subsequent paths are relative!
-setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
+# setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 
 # 1. Environment setup and package loading
 if (!require("pacman")) install.packages("pacman")

@@ -10,7 +10,7 @@
 # ==============================================================================
 
 # --- 0. Environment Setup ---
-setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
+# setwd("C:/Users/Sorcier_W/Desktop/ATM/Exercise-Multiomics-Trios")
 options(timeout = 600) # Prevent KEGG API timeout
 
 if (!require("pacman")) install.packages("pacman")
